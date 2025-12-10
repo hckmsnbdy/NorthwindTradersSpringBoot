@@ -28,12 +28,12 @@ public class JdbcProductDao implements ProductDao {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Product p = new Product(
-                        rs.getInt("ProductID"),
-                        rs.getString("ProductName"),
-                        rs.getString("CategoryID"),
-                        rs.getDouble("UnitPrice")
-                );
+                Product p = new Product();
+                p.setProductId(rs.getInt("ProductID"));
+                p.setName(rs.getString("ProductName"));
+                p.setCategory(String.valueOf(rs.getInt("CategoryID")));
+                p.setPrice(rs.getDouble("UnitPrice"));
+
                 products.add(p);
             }
 
@@ -71,4 +71,35 @@ public class JdbcProductDao implements ProductDao {
 
         return null;
     }
+    @Override
+    public Product insert(Product product) {
+        String sql = "INSERT INTO Products (ProductName, CategoryID, UnitPrice) " +
+                "VALUES (?, ?, ?)";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, product.getName());
+            stmt.setInt(2, Integer.parseInt(product.getCategory()));
+            stmt.setDouble(3, product.getPrice());
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        int newId = keys.getInt(1);
+                        product.setProductId(newId);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return product;
+    }
+
+
 }

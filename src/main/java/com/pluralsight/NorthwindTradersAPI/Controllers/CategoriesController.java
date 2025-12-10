@@ -24,4 +24,8 @@ public class CategoriesController {
     public Category getCategoryById(@PathVariable int id) {
         return categoryDao.getById(id);
     }
+    @RequestMapping(path = "/categories", method = RequestMethod.POST)
+    public Category addCategory(@RequestBody Category category) {
+        return categoryDao.insert(category);
+    }
 }

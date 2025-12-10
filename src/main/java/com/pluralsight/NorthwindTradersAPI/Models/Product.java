@@ -1,9 +1,21 @@
 package com.pluralsight.NorthwindTradersAPI.Models;
 
 public class Product {
-    int productId ;
-    String name, category;
-    double price;
+    private int productId;
+    private String name;
+    private String category;
+    private double price;
+
+    // BOŞ constructor (Jackson / @RequestBody için şart)
+    public Product() {
+    }
+
+    public Product(int productId, String name, String category, double price) {
+        this.productId = productId;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+    }
 
     public int getProductId() {
         return productId;
@@ -34,13 +46,6 @@ public class Product {
     }
 
     public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public Product(int productId, String name, String category, double price) {
-        this.productId = productId;
-        this.name = name;
-        this.category = category;
         this.price = price;
     }
 

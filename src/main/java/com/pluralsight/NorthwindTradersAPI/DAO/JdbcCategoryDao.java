@@ -66,4 +66,31 @@ public class JdbcCategoryDao implements CategoryDao {
 
         return null;
     }
+    @Override
+    public Category insert(Category category) {
+        String sql = "INSERT INTO Categories (CategoryName) VALUES (?)";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, category.getCategoryName());
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        int newId = keys.getInt(1);
+                        category.setCategoryId(newId);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return category;
+    }
+
 }
